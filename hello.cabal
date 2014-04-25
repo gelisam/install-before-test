@@ -6,3 +6,8 @@ cabal-version:       >=1.10
 library
   build-depends:       base
   exposed-modules:     Hello
+
+test-suite test-hello
+  build-depends:       base, hello
+  Type:                exitcode-stdio-1.0
+  main-is:             Main.hs
