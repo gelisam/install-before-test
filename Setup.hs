@@ -14,6 +14,9 @@ main = do
     when ("test" `elem` args) $ do
       -- unlike most packages, this one needs to be installed before it can be tested.
       
+      -- extra step required if your package has dependencies
+      defaultMainArgs ["install", "--only-dependencies", "--enable-tests"]
+      
       -- extra steps required if your tests import Paths_<package-name>
       defaultMainArgs ["configure"]
       defaultMainArgs ["build"]
@@ -22,4 +25,3 @@ main = do
     when ("install" `elem` args && "--enable-tests" `elem` args) $ do
       -- first, install without the tests.
       defaultMainArgs (substitute [("--enable-tests", [])] args)
-    defaultMainArgs args
