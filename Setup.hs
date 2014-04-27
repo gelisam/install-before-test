@@ -1,7 +1,20 @@
 import Control.Monad
 import Distribution.Simple
 import System.Environment
+import System.IO
 
+
+-- Surprisingly, if the user types "cabal install --enable-tests",
+-- `args` will *not* be ["install", "--enable-tests"]. Instead, cabal will
+-- run Setup.hs repeatedly with different arguments:
+-- 
+--     ["configure","--verbose=1","--builddir=dist/dist-sandbox-28d8356a","--ghc","--prefix=...",...]
+--     ["build","--verbose=1","--builddir=dist/dist-sandbox-28d8356a"]
+--     ["test","--builddir=dist/dist-sandbox-28d8356a"]
+--     ["install","--verbose=1","--builddir=dist/dist-sandbox-28d8356a"]
+-- 
+-- We need to manipulate `args` via `substitute` in order to preserve those
+-- extra arguments.
 substitute :: Eq a => [(a, [a])] -> [a] -> [a]
 substitute substitutions = (>>= go)
   where
@@ -11,17 +24,12 @@ substitute substitutions = (>>= go)
 
 main = do
     args <- getArgs
+    
+    -- withFile "Setup.log" AppendMode $ \h -> do
+    --   hPutStrLn h (show args)
+    
     when ("test" `elem` args) $ do
       -- unlike most packages, this one needs to be installed before it can be tested.
-      
-      -- extra step required if your package has dependencies
-      defaultMainArgs ["install", "--only-dependencies", "--enable-tests"]
-      
-      -- extra steps required if your tests import Paths_<package-name>
-      defaultMainArgs ["configure"]
-      defaultMainArgs ["build"]
-      
-      defaultMainArgs ["install"]
-    when ("install" `elem` args && "--enable-tests" `elem` args) $ do
-      -- first, install without the tests.
-      defaultMainArgs (substitute [("--enable-tests", [])] args)
+      defaultMainArgs (substitute [("test", ["install","--verbose=1"])] args)
+    
+    defaultMainArgs args
