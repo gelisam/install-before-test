@@ -13,7 +13,9 @@ main = do
     args <- getArgs
     when ("test" `elem` args) $ do
       -- unlike most packages, this one needs to be installed before it can be tested.
-      defaultMainArgs (substitute [("test", ["install"])] args)
+      defaultMainArgs ["configure"]
+      defaultMainArgs ["build"]
+      defaultMainArgs ["install"]
     when ("install" `elem` args && "--enable-tests" `elem` args) $ do
       -- first, install without the tests.
       defaultMainArgs (substitute [("--enable-tests", [])] args)

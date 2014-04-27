@@ -2,6 +2,8 @@ import Data.List
 import System.Exit
 import System.Process
 
+import Paths_hello
+
 
 main :: IO ()
 main = do
