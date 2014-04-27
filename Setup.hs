@@ -12,7 +12,7 @@ substitute substitutions = (>>= go)
 main = do
     args <- getArgs
     when ("test" `elem` args) $ do
-      -- unlike most packages, Hawk needs to be installed before it can be tested.
+      -- unlike most packages, this one needs to be installed before it can be tested.
       defaultMainArgs (substitute [("test", ["install"])] args)
     when ("install" `elem` args && "--enable-tests" `elem` args) $ do
       -- first, install without the tests.
